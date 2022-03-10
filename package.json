@@ -1,0 +1,35 @@
+{
+  "name": "dontmissit",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.3",
+    "prettier": "^2.5.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "lint": "eslint .",
+    "fix": "eslint . --fix"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
