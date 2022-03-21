@@ -1,9 +1,9 @@
+import { defaultServices } from './initial';
+
 export const state = {
-  services: {
-    facebook: [],
-    twitter: [],
-    instagram: []
-  },
+  browser: {},
+  services: defaultServices,
   isModalOpen: false,
-  modalContent: ''
+  modalContent: '',
+  loading: false
 };

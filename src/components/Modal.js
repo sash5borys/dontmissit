@@ -12,7 +12,7 @@ const Modal = () => {
 
   return (
     <div className="app-modal">
-      <p>{state.modalContent}</p>
+      <span>{state.modalContent}</span>
     </div>
   );
 };

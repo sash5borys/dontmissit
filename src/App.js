@@ -5,6 +5,7 @@ import ServiceBlock from './components/ServiceBlock';
 
 const App = () => {
   const { state } = useContext(StateContext);
+  const ws = new WebSocket('ws://0.0.0.0:9014');
 
   return (
     <div className="app">
@@ -22,9 +23,10 @@ const App = () => {
       </div>
       <div className="container full-container">
         <section className="app-srv-block">
-          {Object.keys(state.services).map((service) => {
-            return <ServiceBlock key={service} serviceName={service} />;
-          })}
+          {state.services &&
+            Object.keys(state.services).map((service) => {
+              return <ServiceBlock key={service} serviceName={service} ws={ws} />;
+            })}
         </section>
       </div>
       <div className="container">

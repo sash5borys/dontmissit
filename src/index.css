@@ -224,7 +224,7 @@ header{
 .app-srv-block__list__dropdown_item, .app-srv-block__list__twits__item span{
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   white-space: nowrap;
 }
 .app-srv-block__list__dropdown_item span:first-child{
