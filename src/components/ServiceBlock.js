@@ -1,11 +1,26 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { StateContext } from './../StateProvider';
-import { defaultSelectors, defaultPeriod } from '../initial';
+import { defaultSelectors, defaultPeriod, defaultDateFormat } from '../initial';
+import moment from 'moment';
 
 const ServiceBlock = ({ serviceName, ws }) => {
   const { state, dispatch } = useContext(StateContext);
   const [url, setUrl] = useState('');
-  const period = defaultPeriod.match(/\d+/);
+
+  const sliceDate = (dateText) => {
+    const num = dateText.match(/\d+/);
+    const token = dateText.match(/[a-z]/);
+    return { num, token };
+  };
+  const { num: periodNum, token: periodToken } = sliceDate(defaultPeriod);
+
+  const canIUpdatePage = (pageTime, globalTime) => {
+    const timeDiff = moment(globalTime, defaultDateFormat).diff(
+      moment(pageTime, defaultDateFormat),
+      `s`
+    );
+    return Math.abs(timeDiff) > 0;
+  };
 
   const handleTwits = (page, key) => {
     ws.send(
@@ -25,7 +40,7 @@ const ServiceBlock = ({ serviceName, ws }) => {
         const { err, result: twits } = JSON.parse(e.data);
         if (err) throw new Error(err);
         console.log(`клієнт отримав: [${twits}]`);
-        if (twits.length<1) throw 'немає актуальних даних';
+        if (twits.length < 1) throw 'немає актуальних даних';
 
         dispatch({
           type: 'ADD_TWITS',
@@ -34,7 +49,6 @@ const ServiceBlock = ({ serviceName, ws }) => {
         });
       } catch (err) {
         const errText = err.toString();
-        console.error(errText);
         dispatch({ type: 'HANDLE_ERROR', payload: errText });
       }
     });
@@ -62,7 +76,8 @@ const ServiceBlock = ({ serviceName, ws }) => {
           //   img: '',
           // }
         ],
-        isFilterOn: true
+        isFilterOn: true,
+        nextUpdateTime: moment().add(periodNum, periodToken).format(defaultDateFormat)
       };
 
       dispatch({ type: 'ADD_PAGE', serviceName, payload: newPage });
@@ -78,17 +93,35 @@ const ServiceBlock = ({ serviceName, ws }) => {
   };
 
   useEffect(() => {
-    console.log(`старт таймера ${serviceName}`);
+    console.log(`період оновлення ${defaultPeriod}`);
+    dispatch({
+      type: 'HANDLE_GLOBAL_TIMER',
+      payload: { nextUpdateTime: moment().add(periodNum, periodToken).format(defaultDateFormat) }
+    });
+
     setInterval(() => {
-      console.log(`період оновлення даних ${defaultPeriod}`);
-      if(state.services[serviceName].length>0){
+      if (state.services[serviceName].length > 0) {
         state.services[serviceName].map((page, key) => {
-          if (page.isFilterOn) {
-              handleTwits(page, key);
+          if (page.isFilterOn && canIUpdatePage(page.nextUpdateTime, state.nextUpdateTime)) {
+            console.log(`оновлення для ${page.url}`);
+            handleTwits(page, key);
+
+            dispatch({
+              type: 'HANDLE_PAGE_TIMER',
+              serviceName,
+              payload: {
+                key,
+                nextUpdateTime: moment().add(periodNum, periodToken).format(defaultDateFormat)
+              }
+            });
           }
         });
       }
-    }, period * 60 * 1000);
+      dispatch({
+        type: 'HANDLE_GLOBAL_TIMER',
+        payload: { nextUpdateTime: moment().add(periodNum, periodToken).format(defaultDateFormat) }
+      });
+    }, periodNum.toString() * 60 * 1000);
   }, []);
 
   return (
@@ -151,11 +184,11 @@ const ServiceBlock = ({ serviceName, ws }) => {
         </div>
       )}
       <div className="app-srv-block__list__twits">
-        {state.services[serviceName].length>0 &&
+        {state.services[serviceName].length > 0 &&
           state.services[serviceName].map((page) => {
             return (
               <section className="app-srv-block__list__twits__block" key={page.id}>
-                {page.twits.length>0 &&
+                {page.twits.length > 0 &&
                   page.isFilterOn &&
                   page.twits.map((twit) => {
                     return (
