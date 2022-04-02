@@ -16,9 +16,9 @@ const createServer = async (WSEndpoint, host, port) => {
     .createServer({
       target: WSEndpoint,
       ws: true,
-      localAddress: host
+      localAddress: host + ''
     })
-    .listen(port);
+    .listen(+port);
 };
 
 const run = async (options) => {
@@ -46,7 +46,7 @@ const run = async (options) => {
           let { err, result } = await scrape(browser, action.payload);
           if (err) throw new Error(err);
 
-          result = JSON.stringify({result});
+          result = JSON.stringify({ result });
           console.log(`сервер ${ip} отримав: ${result}`);
           ws.send(result);
         }

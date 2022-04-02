@@ -12,7 +12,7 @@ const defaultOptions = {
 
 const getSearchUrl = (params) => {
   const { serviceName, search } = params;
-  return `https://${serviceName}.com/${search}/`;
+  return `https://${serviceName + ''}.com/${search + ''}/`;
 };
 
 const search = async (page, params) => {
@@ -21,31 +21,32 @@ const search = async (page, params) => {
 };
 
 const sliceDate = (dateText) => {
+  dateText = dateText + '';
   const num = dateText.match(/\d+/);
   const token = dateText.match(/[a-z]/);
   return { num, token };
 };
 
 const isActualDate = (date, period) => {
-  const { num: dateNum, token: dateToken } = sliceDate(date);
   const { num: periodNum, token: periodToken } = sliceDate(period);
+  const { num: dateNum, token: dateToken } = sliceDate(date);
   const dateOfPub = moment().subtract(dateNum, dateToken);
-  return moment().diff(dateOfPub, `${periodToken}`) < periodNum;
+  return dateToken + '' === periodToken + '' && moment().diff(dateOfPub, periodToken + '') < periodNum;
 };
 
 const autoScroll = async (page, params) => {
   const { selectors, period } = params;
   let isNotActual = true;
 
-  await page.waitForSelector(`${selectors.desc}`);
+  await page.waitForSelector(selectors.desc + '');
 
   while (isNotActual) {
     await page.mouse.wheel({ deltaY: 800 });
 
-    const date = await page.$$eval(`${selectors.date}`, (items) =>
+    const dates = await page.$$eval(selectors.date + '', (items) =>
       items.map((item) => item.textContent)
     );
-    isNotActual = isActualDate(date[date.length - 1], period);
+    isNotActual = isActualDate(dates[dates.length - 1], period);
   }
 };
 
@@ -57,19 +58,23 @@ const receiveTwits = async (page, params) => {
   const content = await page.content();
   const $ = cheerio.load(content);
 
-  const twits = $(`${selectors.twit}`).map(function () {
-    let date = $(this).find(`${selectors.date}`).text();
+  const twits = $(selectors.twit + '').map(function () {
+    let date = $(this)
+      .find(selectors.date + '')
+      .text();
     const desc = $(this)
-      .find(`${selectors.desc}`)
+      .find(selectors.desc + '')
       .text()
       .replace(/see more/gi, '');
 
     if (isActualDate(date, period) && desc.length > 0) {
       const { num: dateNum, token: dateToken } = sliceDate(date);
       date = moment().locale('uk').subtract(dateNum, dateToken).format('MMMM Do YYYY, h:mm:ss');
-      let img = $(this).find(`${selectors.img}`);
+      let img = $(this).find(selectors.img + '');
       img = img.attr('poster') || img.attr('src');
-      const url = $(this).find(`${selectors.url}`).attr('href');
+      const url = $(this)
+        .find(selectors.url + '')
+        .attr('href');
 
       return {
         id: new Date().getTime().toString(),
