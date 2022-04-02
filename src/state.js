@@ -5,5 +5,5 @@ export const state = {
   services: defaultServices,
   isModalOpen: false,
   modalContent: '',
-  loading: false
+  nextUpdateTime: ''
 };

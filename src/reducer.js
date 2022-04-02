@@ -60,6 +60,23 @@ export const reducer = (state, action) => {
         isModalOpen: false
       };
     }
+    case 'HANDLE_GLOBAL_TIMER': {
+      return {
+        ...state,
+        nextUpdateTime: action.payload.nextUpdateTime
+      };
+    }
+    case 'HANDLE_PAGE_TIMER': {
+      const newPage = {
+        ...state.services[action.serviceName][action.payload.key],
+        nextUpdateTime: action.payload.nextUpdateTime
+      };
+
+      state.services[action.serviceName][action.payload.key] = newPage;
+      return {
+        ...state
+      };
+    }
     case 'ADD_TWITS': {
       const newPage = {
         ...state.services[action.serviceName][action.payload.key],

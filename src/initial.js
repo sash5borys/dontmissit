@@ -21,3 +21,5 @@ export const defaultSelectors = {
 };
 
 export const defaultPeriod = '15m';
+
+export const defaultDateFormat = 'MMMM Do YYYY, h:mm:ss';
