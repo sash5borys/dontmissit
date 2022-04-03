@@ -95,7 +95,7 @@ summary {
   margin-bottom: 0.25rem;
 }
 h1 {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 800;
 }
 h2 {
@@ -118,10 +118,13 @@ p {
   flex-direction: column;
 }
 .container{
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
 }
 .full-container{
   height: 100%;
+}
+.center-container{
+  justify-content: flex-start;
 }
 
 /* section */
@@ -133,11 +136,15 @@ header{
   background: blanchedalmond;
   border-radius: 1rem;
   padding: 0.25rem 0.5rem;
-  height: 75px;
-  width: 125px;
+  height: fit-content;
+  width: fit-content;
+  align-items: center;
 }
 .app-logo__title {
   line-height: 1.25;
+}
+.app-logo__img{
+  height: fit-content;
 }
 .app-logo__img:hover, .app-logo__img:focus {
   animation: bellshake .5s cubic-bezier(.36,.07,.19,.97) both;
@@ -182,8 +189,8 @@ header{
 .app-srv-block__list__add-form {
   background: var(--clr-white);
   border-radius: var(--radius);
-  padding: 1rem;
-  margin-bottom: 2rem;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
 }
 .app-srv-block__list__add-form form{
   display: flex;
@@ -234,7 +241,7 @@ header{
   margin-right: 0.5rem;
 }
 .app-srv-block__list__twits{
-  height: 50vh;
+  height: 55vh;
   overflow-y: scroll;
 }
 .app-srv-block__list__twits__item {
@@ -242,7 +249,6 @@ header{
   flex-direction: column;
   background: var(--clr-white);
   margin: 1rem auto;
-  padding: 1rem;
   border-radius: var(--radius);
 }
 .app-srv-block__list__twits__item button,
@@ -284,14 +290,6 @@ footer {
 }
 /* resolution breakpoints */
 @media screen and (min-width: 480px){
-  .app-logo{
-    height: fit-content;
-    width: fit-content;
-    align-items: center;
-  }
-  .app-logo__img{
-    height: fit-content;
-  }
   .app-srv-block__list__twits__item__img {
     height: 220px;
   }
@@ -321,6 +319,9 @@ footer {
   }
 }
 @media screen and (min-width: 1024px) {
+  .center-container{
+    justify-content: center;
+  }
   .app-srv-block__list__add-form input, .app-srv-block__list__add-form button, .app-srv-block__list__dropdown button {
     padding: 0.5rem 0.75rem;
   }
@@ -334,7 +335,7 @@ footer {
 }
 @media screen and (min-width: 1200px) {
   .app-srv-block{
-    grid-auto-columns: calc(25% - 0.5rem);
+    grid-auto-columns: calc(33% - 0.5rem);
   }
   .app-srv-block__list__twits__item__img {
     height: 220px;
