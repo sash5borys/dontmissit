@@ -17,9 +17,9 @@ const ServiceBlock = ({ serviceName, ws }) => {
   const canIUpdatePage = (pageTime, globalTime) => {
     const timeDiff = moment(globalTime, defaultDateFormat).diff(
       moment(pageTime, defaultDateFormat),
-      `s`
+      's'
     );
-    return Math.abs(timeDiff) > 0;
+    return timeDiff >= 0;
   };
 
   const handleTwits = (page, key) => {
@@ -102,7 +102,10 @@ const ServiceBlock = ({ serviceName, ws }) => {
     setInterval(() => {
       if (state.services[serviceName].length > 0) {
         state.services[serviceName].map((page, key) => {
-          if (page.isFilterOn && canIUpdatePage(page.nextUpdateTime, state.nextUpdateTime)) {
+          if (
+            page.isFilterOn &&
+            canIUpdatePage(page.nextUpdateTime, moment().format(defaultDateFormat))
+          ) {
             console.log(`оновлення для ${page.url}`);
             handleTwits(page, key);
 
