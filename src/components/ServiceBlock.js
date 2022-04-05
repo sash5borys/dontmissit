@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { StateContext } from './../StateProvider';
+import Twit from './Twit';
 import { defaultSelectors, defaultPeriod, defaultDateFormat } from '../initial';
 import moment from 'moment';
 
@@ -194,31 +195,7 @@ const ServiceBlock = ({ serviceName, ws }) => {
                 {page.twits.length > 0 &&
                   page.isFilterOn &&
                   page.twits.map((twit) => {
-                    return (
-                      <article className="app-srv-block__list__twits__item" key={twit.id}>
-                        <div>
-                          <span>
-                            <h3>@{page.url}</h3>
-                            <a href={twit.url} target="_blank" rel="noreferrer">
-                              перейти
-                            </a>
-                          </span>
-                        </div>
-                        <hr />
-                        <div>
-                          <i>[┘]{twit.date}</i>
-                          <p className="app-srv-block__list__twits__item__text">{twit.desc}</p>
-                          {twit.img && (
-                            <div
-                              className="app-srv-block__list__twits__item__img"
-                              style={{
-                                backgroundImage: `url(${twit.img})`
-                              }}
-                            ></div>
-                          )}
-                        </div>
-                      </article>
-                    );
+                    return <Twit key={twit.id} page={page} twit={twit} />;
                   })}
               </section>
             );
