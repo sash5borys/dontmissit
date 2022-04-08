@@ -11,8 +11,8 @@ const defaultOptions = {
 };
 
 const getSearchUrl = (params) => {
-  const { serviceName, search } = params;
-  return `https://${serviceName + ''}.com/${search + ''}/`;
+  let { serviceName, search } = params;
+  return `https://${serviceName + ''}.com${search ? `/${search + ''}/` : ''}`;
 };
 
 const search = async (page, params) => {
@@ -31,7 +31,9 @@ const isActualDate = (date, period) => {
   const { num: periodNum, token: periodToken } = sliceDate(period);
   const { num: dateNum, token: dateToken } = sliceDate(date);
   const dateOfPub = moment().subtract(dateNum, dateToken);
-  return dateToken + '' === periodToken + '' && moment().diff(dateOfPub, periodToken + '') < periodNum;
+  return (
+    dateToken + '' === periodToken + '' && moment().diff(dateOfPub, periodToken + '') < periodNum
+  );
 };
 
 const autoScroll = async (page, params) => {
@@ -51,7 +53,7 @@ const autoScroll = async (page, params) => {
 };
 
 const receiveTwits = async (page, params) => {
-  const { selectors, period } = params;
+  const { selectors, period, serviceName, search } = params;
 
   await autoScroll(page, { selectors, period });
 
@@ -69,19 +71,18 @@ const receiveTwits = async (page, params) => {
 
     if (isActualDate(date, period) && desc.length > 0) {
       const { num: dateNum, token: dateToken } = sliceDate(date);
-      date = moment().locale('uk').subtract(dateNum, dateToken).format('MMMM Do YYYY, h:mm:ss');
+      date = moment().subtract(dateNum, dateToken).format('MMMM Do YYYY, h:mm:ss');
       let img = $(this).find(selectors.img + '');
       img = img.attr('poster') || img.attr('src');
-      const url = $(this)
-        .find(selectors.url + '')
-        .attr('href');
+      const url = getSearchUrl({ serviceName }) + $(this).find(`${selectors.url}`).attr('href');
 
       return {
         id: new Date().getTime().toString(),
         desc,
         img,
         url,
-        date
+        date,
+        page: search
       };
     }
     return;
@@ -95,7 +96,12 @@ export const scrape = async (browser, params) => {
   try {
     const newPage = await browser.newPage();
     await search(newPage, { serviceName, search: page.url });
-    const result = await receiveTwits(newPage, { selectors, period });
+    const result = await receiveTwits(newPage, {
+      selectors,
+      period,
+      serviceName,
+      search: page.url
+    });
     await newPage.close();
     if (!result) throw new Error('помилка отримання даних');
 
