@@ -95,16 +95,21 @@ const ServiceBlock = ({ serviceName, ws }) => {
   };
 
   const mergingTwits = (service) => {
-    const twits = service.map((page) => {
+    let twits = service.flatMap((page) => {
       if (page.isFilterOn) {
         return page.twits;
       }
       return;
     });
-    return twits.flat().sort(function (a, b) {
-      return a.id - b.id;
+    return twits.sort(function (a, b) {
+      return (
+        moment(a.date, defaultDateFormat).format('x') -
+        moment(b.date, defaultDateFormat).format('x')
+      );
     });
   };
+
+  const stateTwits = mergingTwits(state.services[serviceName]);
 
   useEffect(() => {
     console.log(`період оновлення ${defaultPeriod}`);
@@ -201,8 +206,8 @@ const ServiceBlock = ({ serviceName, ws }) => {
         </div>
       )}
       <section className="app-srv-block__list__twits">
-        {mergingTwits(state.services[serviceName]).length > 0 &&
-          mergingTwits(state.services[serviceName]).map((twit) => {
+        {stateTwits.length > 0 &&
+          stateTwits.map((twit) => {
             return <Twit key={twit.id} twit={twit} />;
           })}
       </section>
