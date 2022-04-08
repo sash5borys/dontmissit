@@ -71,18 +71,18 @@ const receiveTwits = async (page, params) => {
 
     if (isActualDate(date, period) && desc.length > 0) {
       const { num: dateNum, token: dateToken } = sliceDate(date);
-      date = moment().subtract(dateNum, dateToken).format('MMMM Do YYYY, h:mm:ss');
+      date = moment().subtract(dateNum, dateToken);
       let img = $(this).find(selectors.img + '');
       img = img.attr('poster') || img.attr('src');
       const url = getSearchUrl({ serviceName }) + $(this).find(`${selectors.url}`).attr('href');
 
       return {
-        id: new Date().getTime().toString(),
+        id: date.format('x') + `_${search + ''}`,
         desc,
         img,
         url,
-        date,
-        page: search
+        date: date.format('MMMM Do YYYY, h:mm:ss'),
+        page: search + ''
       };
     }
     return;
