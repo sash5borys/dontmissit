@@ -71,10 +71,11 @@ const ServiceBlock = ({ serviceName, ws }) => {
         twits: [
           // {
           //   id: new Date().getTime().toString(),
-          //   url: '',
-          //   title: '',
           //   desc: '',
           //   img: '',
+          //   url: '',
+          //   date: ''
+          //   page: ''
           // }
         ],
         isFilterOn: true,
@@ -91,6 +92,18 @@ const ServiceBlock = ({ serviceName, ws }) => {
       const errText = 'будь ласка введіть дані';
       dispatch({ type: 'HANDLE_ERROR', payload: errText });
     }
+  };
+
+  const mergingTwits = (service) => {
+    const twits = service.map((page) => {
+      if (page.isFilterOn) {
+        return page.twits;
+      }
+      return;
+    });
+    return twits.flat().sort(function (a, b) {
+      return a.id - b.id;
+    });
   };
 
   useEffect(() => {
@@ -131,7 +144,7 @@ const ServiceBlock = ({ serviceName, ws }) => {
   return (
     <section className="app-srv-block__list">
       <h2>#{serviceName}</h2>
-      <div className="app-srv-block__list__add-form">
+      <section className="app-srv-block__list__add-form">
         <form onSubmit={handleSubmit}>
           <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} />
           <button type="submit" className="app-srv-block__list__add-form_submit">
@@ -179,7 +192,7 @@ const ServiceBlock = ({ serviceName, ws }) => {
               })}
           </ul>
         </details>
-      </div>
+      </section>
       {state.services[serviceName].length > 0 && (
         <div className="app-srv-block__list__dropall">
           <button onClick={() => dispatch({ type: 'REMOVE_ALL_PAGES', serviceName })}>
@@ -187,20 +200,12 @@ const ServiceBlock = ({ serviceName, ws }) => {
           </button>
         </div>
       )}
-      <div className="app-srv-block__list__twits">
-        {state.services[serviceName].length > 0 &&
-          state.services[serviceName].map((page) => {
-            return (
-              <section className="app-srv-block__list__twits__block" key={page.id}>
-                {page.twits.length > 0 &&
-                  page.isFilterOn &&
-                  page.twits.map((twit) => {
-                    return <Twit key={twit.id} page={page} twit={twit} />;
-                  })}
-              </section>
-            );
+      <section className="app-srv-block__list__twits">
+        {mergingTwits(state.services[serviceName]).length > 0 &&
+          mergingTwits(state.services[serviceName]).map((twit) => {
+            return <Twit key={twit.id} twit={twit} />;
           })}
-      </div>
+      </section>
     </section>
   );
 };

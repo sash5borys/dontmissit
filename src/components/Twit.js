@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Twit = ({ page, twit }) => {
+const Twit = ({ twit }) => {
   return (
     <article className="app-srv-block__list__twits__item" key={twit.id}>
       <div>
         <span>
-          <h3>@{page.url}</h3>
+          <h3>@{twit.page}</h3>
           <a href={twit.url} target="_blank" rel="noreferrer">
             перейти
           </a>
