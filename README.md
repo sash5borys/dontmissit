@@ -21,8 +21,8 @@ Current available resources:
 **How to start app**
 
 `npm i`<br />
-`npm run start`
+`npm run client:start` & `npm run server:start` 
 
 You can change update period in `./src/initial.js -> defaultPeriod` .
 
-<i>Currently, information is receive only from public resources.</i>
+<i>Currently, information is receive only from public resources!</i>

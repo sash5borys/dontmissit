@@ -5,7 +5,7 @@ import ServiceBlock from './components/ServiceBlock';
 
 const App = () => {
   const { state } = useContext(StateContext);
-  const ws = new WebSocket('ws://0.0.0.0:9014');
+  const ws = new WebSocket('ws://127.0.0.1:8080');
   const stateServices = Object.keys(state.services);
 
   return (

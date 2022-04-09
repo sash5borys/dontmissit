@@ -5,8 +5,10 @@ import App from './App';
 import { StateProvider } from './StateProvider';
 
 ReactDOM.render(
-  <StateProvider>
-    <App />
-  </StateProvider>,
+  <React.StrictMode>
+    <StateProvider>
+      <App />
+    </StateProvider>
+  </React.StrictMode>,
   document.getElementById('root')
 );
