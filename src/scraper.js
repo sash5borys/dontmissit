@@ -11,8 +11,8 @@ const defaultOptions = {
 };
 
 const getSearchUrl = (params) => {
-  let { serviceName, search } = params;
-  return `https://${serviceName + ''}.com${search ? `/${search + ''}/` : ''}`;
+  const { serviceName, search } = params;
+  return `https://www.${serviceName + ''}.com${search ? `/${search + ''}/` : ''}`;
 };
 
 const search = async (page, params) => {
@@ -74,7 +74,13 @@ const receiveTwits = async (page, params) => {
       date = moment().subtract(dateNum, dateToken);
       let img = $(this).find(selectors.img + '');
       img = img.attr('poster') || img.attr('src');
-      const url = getSearchUrl({ serviceName }) + $(this).find(`${selectors.url}`).attr('href');
+      const searchUrl = getSearchUrl({ serviceName });
+      let url = $(this)
+        .find(`${selectors.url}`)
+        .attr('href')
+        .concat('?')
+        .match(/.+(?=\?)/);
+      url = !url.toString().includes(searchUrl) ? searchUrl + url : url;
 
       return {
         id: date.format('x') + `_${search + ''}`,
