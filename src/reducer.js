@@ -78,12 +78,14 @@ export const reducer = (state, action) => {
       };
     }
     case 'ADD_TWITS': {
+      const curTwits = [
+        ...state.services[action.serviceName][action.payload.key].twits,
+        ...action.payload.twits
+      ];
+
       const newPage = {
         ...state.services[action.serviceName][action.payload.key],
-        twits: [
-          ...state.services[action.serviceName][action.payload.key].twits,
-          ...action.payload.twits
-        ]
+        twits: [...new Map(curTwits.map((twit) => [twit['url'], twit])).values()]
       };
 
       state.services[action.serviceName][action.payload.key] = newPage;
