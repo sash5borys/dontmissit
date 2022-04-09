@@ -1,4 +1,4 @@
-# Dont miss it (Alpha)
+# Dont miss it (Beta)
 
 Monitoring of important sources. <br />
 Current available resources:
