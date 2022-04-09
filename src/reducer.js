@@ -1,7 +1,8 @@
 export const reducer = (state, action) => {
   switch (action.type) {
     case 'ADD_PAGE': {
-      const newPage = [...state.services[action.serviceName], action.payload];
+      const curPages = [...state.services[action.serviceName], action.payload];
+      const newPage = [...new Map(curPages.map((item) => [item['url'], item])).values()];
 
       state.services[action.serviceName] = newPage;
       return {
@@ -14,7 +15,6 @@ export const reducer = (state, action) => {
       const curKey = state.services[action.serviceName].findIndex(
         (address) => address.id === action.payload.id
       );
-
       const newPage = {
         ...state.services[action.serviceName][curKey],
         isFilterOn: action.payload.isFilterOn
@@ -82,10 +82,9 @@ export const reducer = (state, action) => {
         ...state.services[action.serviceName][action.payload.key].twits,
         ...action.payload.twits
       ];
-
       const newPage = {
         ...state.services[action.serviceName][action.payload.key],
-        twits: [...new Map(curTwits.map((twit) => [twit['url'], twit])).values()]
+        twits: [...new Map(curTwits.map((item) => [item['url'], item])).values()]
       };
 
       state.services[action.serviceName][action.payload.key] = newPage;
