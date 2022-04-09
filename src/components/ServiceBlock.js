@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { StateContext } from './../StateProvider';
+import Twit from './Twit';
 import { defaultSelectors, defaultPeriod, defaultDateFormat } from '../initial';
 import moment from 'moment';
 
@@ -70,10 +71,11 @@ const ServiceBlock = ({ serviceName, ws }) => {
         twits: [
           // {
           //   id: new Date().getTime().toString(),
-          //   url: '',
-          //   title: '',
           //   desc: '',
           //   img: '',
+          //   url: '',
+          //   date: ''
+          //   page: ''
           // }
         ],
         isFilterOn: true,
@@ -91,6 +93,23 @@ const ServiceBlock = ({ serviceName, ws }) => {
       dispatch({ type: 'HANDLE_ERROR', payload: errText });
     }
   };
+
+  const mergingTwits = (service) => {
+    let twits = service.flatMap((page) => {
+      if (page.isFilterOn) {
+        return page.twits;
+      }
+      return;
+    });
+    return twits.sort(function (a, b) {
+      return (
+        moment(a.date, defaultDateFormat).format('x') -
+        moment(b.date, defaultDateFormat).format('x')
+      );
+    });
+  };
+
+  const stateTwits = mergingTwits(state.services[serviceName]);
 
   useEffect(() => {
     console.log(`період оновлення ${defaultPeriod}`);
@@ -130,7 +149,7 @@ const ServiceBlock = ({ serviceName, ws }) => {
   return (
     <section className="app-srv-block__list">
       <h2>#{serviceName}</h2>
-      <div className="app-srv-block__list__add-form">
+      <section className="app-srv-block__list__add-form">
         <form onSubmit={handleSubmit}>
           <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} />
           <button type="submit" className="app-srv-block__list__add-form_submit">
@@ -178,7 +197,7 @@ const ServiceBlock = ({ serviceName, ws }) => {
               })}
           </ul>
         </details>
-      </div>
+      </section>
       {state.services[serviceName].length > 0 && (
         <div className="app-srv-block__list__dropall">
           <button onClick={() => dispatch({ type: 'REMOVE_ALL_PAGES', serviceName })}>
@@ -186,44 +205,12 @@ const ServiceBlock = ({ serviceName, ws }) => {
           </button>
         </div>
       )}
-      <div className="app-srv-block__list__twits">
-        {state.services[serviceName].length > 0 &&
-          state.services[serviceName].map((page) => {
-            return (
-              <section className="app-srv-block__list__twits__block" key={page.id}>
-                {page.twits.length > 0 &&
-                  page.isFilterOn &&
-                  page.twits.map((twit) => {
-                    return (
-                      <article className="app-srv-block__list__twits__item" key={twit.id}>
-                        <div>
-                          <span>
-                            <h3>@{page.url}</h3>
-                            <a href={twit.url} target="_blank" rel="noreferrer">
-                              перейти
-                            </a>
-                          </span>
-                        </div>
-                        <hr />
-                        <div>
-                          <i>[┘]{twit.date}</i>
-                          <p className="app-srv-block__list__twits__item__text">{twit.desc}</p>
-                          {twit.img && (
-                            <div
-                              className="app-srv-block__list__twits__item__img"
-                              style={{
-                                backgroundImage: `url(${twit.img})`
-                              }}
-                            ></div>
-                          )}
-                        </div>
-                      </article>
-                    );
-                  })}
-              </section>
-            );
+      <section className="app-srv-block__list__twits">
+        {stateTwits.length > 0 &&
+          stateTwits.map((twit) => {
+            return <Twit key={twit.id} twit={twit} />;
           })}
-      </div>
+      </section>
     </section>
   );
 };
