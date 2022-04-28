@@ -1,4 +1,4 @@
-import { defaultServices } from './initial';
+import { defaultServices } from '../initial';
 
 export const state = {
   browser: {},

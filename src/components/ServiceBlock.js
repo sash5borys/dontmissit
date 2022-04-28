@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StateContext } from './../StateProvider';
+import { StateContext } from '../data/StateProvider';
 import Twit from './Twit';
 import { defaultSelectors, defaultPeriod, defaultDateFormat } from '../initial';
 import moment from 'moment';
@@ -38,9 +38,9 @@ const ServiceBlock = ({ serviceName, ws }) => {
 
     ws.addEventListener('message', (e) => {
       try {
-        const { err, result: twits } = JSON.parse(e.data);
-        if (err) throw new Error(err);
-        console.log(`клієнт отримав: [${twits}]`);
+        const { err, data: twits } = JSON.parse(e.data);
+        console.log(`клієнт отримав: ${e.data}`);
+        if (err) throw err;
         if (twits.length < 1) throw 'немає актуальних даних';
 
         dispatch({
@@ -49,15 +49,13 @@ const ServiceBlock = ({ serviceName, ws }) => {
           payload: { key, twits }
         });
       } catch (err) {
-        const errText = err.toString();
+        const errText = err + '';
+        console.error(errText);
         dispatch({ type: 'HANDLE_ERROR', payload: errText });
       }
     });
-
-    ws.addEventListener('error', (e) => {
-      const errText = 'помилка підключення до сервера';
-      console.error(errText);
-      dispatch({ type: 'HANDLE_ERROR', payload: errText });
+    ws.addEventListener('close', () => {
+      console.log(`клієнт ${ip} відключено`);
     });
   };
 

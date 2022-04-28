@@ -1,4 +1,3 @@
-import puppeteer from 'puppeteer-core';
 import cheerio from 'cheerio';
 import moment from 'moment';
 
@@ -101,24 +100,23 @@ export const scrape = async (browser, params) => {
 
   try {
     const newPage = await browser.newPage();
-    await search(newPage, { serviceName, search: page.url });
-    const result = await receiveTwits(newPage, {
+    await search(newPage, { serviceName, search: page.url }).catch(() => {
+      throw 'не знайдено потрібної сторінки';
+    });
+    const data = await receiveTwits(newPage, {
       selectors,
       period,
       serviceName,
       search: page.url
+    }).catch(() => {
+      throw 'помилка отримання даних';
     });
     await newPage.close();
-    if (!result) throw new Error('помилка отримання даних');
 
-    return { result };
+    return { data };
   } catch (err) {
-    const errText = err.toString();
+    const errText = err + '';
     console.error(errText);
     return { err: errText };
   }
-};
-
-export const run = async (options) => {
-  return await puppeteer.launch({ ...defaultOptions, ...options });
 };

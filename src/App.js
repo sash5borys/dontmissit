@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { StateContext } from './StateProvider';
+import { StateContext } from './data/StateProvider';
 import Modal from './components/Modal';
 import ServiceBlock from './components/ServiceBlock';
 

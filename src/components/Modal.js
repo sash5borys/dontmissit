@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from 'react';
-import { StateContext } from './../StateProvider';
+import { StateContext } from '../data/StateProvider';
 
 const Modal = () => {
   const { state, dispatch } = useContext(StateContext);
