@@ -1,19 +1,25 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { StateContext } from '../data/StateProvider';
-import Twit from './Twit';
+import { AppContext } from '../App';
 import { defaultSelectors, defaultPeriod, defaultDateFormat } from '../initial';
+import Twit from './Twit';
 import moment from 'moment';
 
-const ServiceBlock = ({ serviceName, ws }) => {
+const ServiceBlock = ({ serviceName }) => {
+  const serviceListSection = useRef(null);
   const { state, dispatch } = useContext(StateContext);
+  const { ws, serviceRefs } = useContext(AppContext);
   const [url, setUrl] = useState('');
-
   const sliceDate = (dateText) => {
     const num = dateText.match(/\d+/);
     const token = dateText.match(/[a-z]/);
     return { num, token };
   };
   const { num: periodNum, token: periodToken } = sliceDate(defaultPeriod);
+
+  const toggleHidden = (el) => {
+    el.style.display = el.style.display == 'none' ? 'block' : 'none';
+  };
 
   const canIUpdatePage = (pageTime, globalTime) => {
     const timeDiff = moment(globalTime, defaultDateFormat).diff(
@@ -51,45 +57,12 @@ const ServiceBlock = ({ serviceName, ws }) => {
       } catch (err) {
         const errText = err + '';
         console.error(errText);
-        dispatch({ type: 'HANDLE_ERROR', payload: errText });
+        dispatch({ type: 'HANDLE_MODAL_CONTENT', payload: errText });
       }
     });
     ws.addEventListener('close', () => {
       console.log(`клієнт ${ip} відключено`);
     });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (url) {
-      const newPage = {
-        id: new Date().getTime().toString(),
-        url,
-        twits: [
-          // {
-          //   id: new Date().getTime().toString(),
-          //   desc: '',
-          //   img: '',
-          //   url: '',
-          //   date: ''
-          //   page: ''
-          // }
-        ],
-        isFilterOn: true,
-        nextUpdateTime: moment().add(periodNum, periodToken).format(defaultDateFormat)
-      };
-
-      dispatch({ type: 'ADD_PAGE', serviceName, payload: newPage });
-      setUrl('');
-      handleTwits(
-        state.services[serviceName][state.services[serviceName].length - 1],
-        state.services[serviceName].length - 1
-      );
-    } else {
-      const errText = 'будь ласка введіть дані';
-      dispatch({ type: 'HANDLE_ERROR', payload: errText });
-    }
   };
 
   const mergingTwits = (service) => {
@@ -108,6 +81,13 @@ const ServiceBlock = ({ serviceName, ws }) => {
   };
 
   const stateTwits = mergingTwits(state.services[serviceName]);
+
+  // useEffect(() => {
+  //   handleTwits(
+  //     state.services[serviceName][state.services[serviceName].length - 1],
+  //     state.services[serviceName].length - 1
+  //   );
+  // }, [state.services[serviceName]]);
 
   useEffect(() => {
     console.log(`період оновлення ${defaultPeriod}`);
@@ -145,69 +125,97 @@ const ServiceBlock = ({ serviceName, ws }) => {
   }, []);
 
   return (
-    <section className="app-srv-block__list">
-      <h2>#{serviceName}</h2>
-      <section className="app-srv-block__list__add-form">
-        <form onSubmit={handleSubmit}>
-          <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} />
-          <button type="submit" className="app-srv-block__list__add-form_submit">
-            +
-          </button>
-        </form>
-        <details className="app-srv-block__list__dropdown">
-          <summary>список джерел</summary>
-          <ul>
-            {state.services[serviceName] &&
-              state.services[serviceName].map((page) => {
-                return (
-                  <li className="app-srv-block__list__dropdown_item" key={page.id}>
-                    <span>{page.url}</span>
-                    <span>
-                      <button
-                        className={
-                          'app-srv-block__list__dropdown_item__filter ' +
-                          (page.isFilterOn && 'filter--active')
-                        }
-                        onClick={() =>
-                          dispatch({
-                            type: 'FILTER_PAGE',
-                            serviceName,
-                            payload: { id: page.id, isFilterOn: !page.isFilterOn }
-                          })
-                        }
-                      >
-                        фiльтр
-                      </button>
-                      <button
-                        onClick={() =>
-                          dispatch({
-                            type: 'REMOVE_PAGE',
-                            serviceName,
-                            payload: page.id
-                          })
-                        }
-                      >
-                        -
-                      </button>
-                    </span>
-                  </li>
-                );
-              })}
-          </ul>
-        </details>
+    <section className="app-srv-block__list center-col" ref={serviceRefs[serviceName]}>
+      <section className="app-srv-block__list__menu-bar center-row">
+        <h2>{serviceName}</h2>
+        <ul className="app-nav__list">
+          <li className="app-nav__list__item">
+            <button
+              className="app-nav__list__add-button"
+              onClick={() => toggleHidden(serviceListSection.current)}
+            >
+              ⧩
+            </button>
+          </li>
+          <li className="app-nav__list__item">
+            <button
+              className="app-nav__list__add-button"
+              onClick={() => dispatch({ type: 'REMOVE_ALL_PAGES', serviceName })}
+            >
+              🗑
+            </button>
+          </li>
+          <li className="app-nav__list__item">
+            <button className="app-nav__list__add-button">x</button>
+          </li>
+        </ul>
+        <ul className="app-srv-block__list__dropdown" ref={serviceListSection}>
+          {state.services[serviceName] &&
+            state.services[serviceName].map((page) => {
+              return (
+                <li className="app-srv-block__list__dropdown_item" key={page.url}>
+                  <span>{page.url}</span>
+                  <span>
+                    <button
+                      className={
+                        'app-srv-block__list__dropdown_item__add-button ' +
+                        (page.isFilterOn && 'filter--active')
+                      }
+                      onClick={() =>
+                        dispatch({
+                          type: 'FILTER_PAGE',
+                          serviceName,
+                          payload: { id: page.id, isFilterOn: !page.isFilterOn }
+                        })
+                      }
+                    >
+                      фiльтр
+                    </button>
+                    <button
+                      className="app-srv-block__list__dropdown_item__add-button"
+                      onClick={() =>
+                        dispatch({
+                          type: 'REMOVE_PAGE',
+                          serviceName,
+                          payload: page.id
+                        })
+                      }
+                    >
+                      видалити
+                    </button>
+                  </span>
+                </li>
+              );
+            })}
+        </ul>
       </section>
-      {state.services[serviceName].length > 0 && (
-        <div className="app-srv-block__list__dropall">
-          <button onClick={() => dispatch({ type: 'REMOVE_ALL_PAGES', serviceName })}>
-            очистити все
-          </button>
-        </div>
-      )}
       <section className="app-srv-block__list__twits">
         {stateTwits.length > 0 &&
           stateTwits.map((twit) => {
             return <Twit key={twit.id} twit={twit} />;
           })}
+        {/* <article className="app-srv-block__list__twits__item">
+          <div className="app-srv-block__list__twits__menu-bar">
+            <span>
+              <h3>@Tsn</h3>
+              <span>
+                <b>·</b> 28.08.2022
+              </span>
+            </span>
+            <a href="tsn.ua/123" target="_blank" rel="noreferrer">
+              перейти
+            </a>
+          </div>
+          <div className="app-srv-block__list__twits__item__text center-col">
+            <p>GJgfdjkhgkjsdhgjkdhjgsdh gfdsjkhgkf fdhsajf fdshjkfhask...</p>
+            <div
+              className="app-srv-block__list__twits__item__img"
+              style={{
+                backgroundImage: `url(https://pbs.twimg.com/media/FbRIqS8XwAUbAYt?format=jpg&name=small)`
+              }}
+            ></div>
+          </div>
+        </article> */}
       </section>
     </section>
   );
