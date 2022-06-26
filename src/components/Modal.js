@@ -11,8 +11,8 @@ const Modal = () => {
   }, [state.isModalOpen]);
 
   return (
-    <div className="app-modal">
-      <span>{state.modalContent}</span>
+    <div className="app-modal header-container">
+      <span>{state.modalContent} Tsdfgsgsd  fsdf </span>
     </div>
   );
 };

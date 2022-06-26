@@ -146,8 +146,8 @@ const ServiceBlock = ({ serviceName, ws }) => {
 
   return (
     <section className="app-srv-block__list">
-      <h2>#{serviceName}</h2>
       <section className="app-srv-block__list__add-form">
+        <h2>#{serviceName}</h2>
         <form onSubmit={handleSubmit}>
           <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} />
           <button type="submit" className="app-srv-block__list__add-form_submit">
