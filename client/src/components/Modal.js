@@ -11,7 +11,7 @@ const Modal = () => {
   }, [state.isModalOpen]);
 
   return (
-    <div className="app-modal">
+    <div className="app-modal header-container">
       <span>{state.modalContent}</span>
     </div>
   );

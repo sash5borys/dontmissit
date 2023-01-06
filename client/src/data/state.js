@@ -5,5 +5,6 @@ export const state = {
   services: defaultServices,
   isModalOpen: false,
   modalContent: '',
-  nextUpdateTime: ''
+  nextUpdateTime: '',
+  selectedService: ''
 };

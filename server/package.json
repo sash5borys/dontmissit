@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.10",
+    "moment": "^2.29.1",
+    "puppeteer-core": "^13.5.1",
+    "ws": "^8.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.3",
+    "prettier": "^2.5.1"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  }
+}

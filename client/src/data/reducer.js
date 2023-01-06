@@ -47,7 +47,7 @@ export const reducer = (state, action) => {
         modalContent: 'видалено усі елементи'
       };
     }
-    case 'HANDLE_ERROR': {
+    case 'HANDLE_MODAL_CONTENT': {
       return {
         ...state,
         isModalOpen: true,
@@ -92,6 +92,12 @@ export const reducer = (state, action) => {
         ...state,
         isModalOpen: true,
         modalContent: 'оновлення даних'
+      };
+    }
+    case 'SELECT_SERVICE': {
+      return {
+        ...state,
+        selectedService: action.serviceName
       };
     }
     default:
