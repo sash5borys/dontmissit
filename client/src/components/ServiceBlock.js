@@ -1,20 +1,16 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
+import { defaultSelectors, defaultPeriod, defaultDateFormat } from '../initial';
 import { StateContext } from '../data/StateProvider';
 import { AppContext } from '../App';
-import { defaultSelectors, defaultPeriod, defaultDateFormat } from '../initial';
 import Twit from './Twit';
 import moment from 'moment';
+import { sliceDate } from "../utils/date";
 
 const ServiceBlock = ({ serviceName }) => {
-  const serviceListSection = useRef(null);
   const { state, dispatch } = useContext(StateContext);
   const { ws, serviceRefs } = useContext(AppContext);
   const [url, setUrl] = useState('');
-  const sliceDate = (dateText) => {
-    const num = dateText.match(/\d+/);
-    const token = dateText.match(/[a-z]/);
-    return { num, token };
-  };
+  const serviceListSection = useRef(null);
   const { num: periodNum, token: periodToken } = sliceDate(defaultPeriod);
 
   const toggleHidden = (el) => {
@@ -45,7 +41,7 @@ const ServiceBlock = ({ serviceName }) => {
     ws.addEventListener('message', (e) => {
       try {
         const { err, data: twits } = JSON.parse(e.data);
-        console.log(`клієнт отримав: ${e.data}`);
+        console.log(`клієнт отримав: ${JSON.parse(e.data)}`);
         if (err) throw err;
         if (twits.length < 1) throw 'немає актуальних даних';
 
@@ -59,9 +55,6 @@ const ServiceBlock = ({ serviceName }) => {
         console.error(errText);
         dispatch({ type: 'HANDLE_MODAL_CONTENT', payload: errText });
       }
-    });
-    ws.addEventListener('close', () => {
-      console.log(`клієнт ${ip} відключено`);
     });
   };
 
@@ -82,12 +75,12 @@ const ServiceBlock = ({ serviceName }) => {
 
   const stateTwits = mergingTwits(state.services[serviceName]);
 
-  // useEffect(() => {
-  //   handleTwits(
-  //     state.services[serviceName][state.services[serviceName].length - 1],
-  //     state.services[serviceName].length - 1
-  //   );
-  // }, [state.services[serviceName]]);
+  useEffect(() => {
+    handleTwits(
+      state.services[serviceName][state.services[serviceName].length - 1],
+      state.services[serviceName].length - 1
+    );
+  }, [state.services[serviceName]]);
 
   useEffect(() => {
     console.log(`період оновлення ${defaultPeriod}`);

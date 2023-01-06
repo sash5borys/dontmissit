@@ -1,27 +1,23 @@
-import React, { useContext, useRef, useState, useEffect } from 'react';
+import React, { useContext, useRef, useState } from 'react';
+import { defaultPeriod, defaultDateFormat } from './initial';
 import { StateContext } from './data/StateProvider';
-import moment from 'moment';
-import { defaultSelectors, defaultPeriod, defaultDateFormat } from './initial';
 import Modal from './components/Modal';
 import ServiceBlock from './components/ServiceBlock';
 import ServiceButton from './components/ServiceButton';
 import comeBackAliveImg from './assets/come_back_alive.png';
+import moment from 'moment';
+import { sliceDate } from "../utils/date";
 
 export const AppContext = React.createContext();
+const ws = new WebSocket('ws://localhost:8080/api/ws');
 
 const App = () => {
   const { state, dispatch } = useContext(StateContext);
-  const ws = new WebSocket('ws://127.0.0.1:8080');
+  const [url, setUrl] = useState('');
   const stateServices = Object.keys(state.services);
   const isServicesAvailable = Object.values(state.services).flat().length > 0;
   const addNewServiceSection = useRef(null);
   const serviceRefs = stateServices.reduce((acc, val) => ({ ...acc, [val]: useRef() }), {});
-  const [url, setUrl] = useState('');
-  const sliceDate = (dateText) => {
-    const num = dateText.match(/\d+/);
-    const token = dateText.match(/[a-z]/);
-    return { num, token };
-  };
   const { num: periodNum, token: periodToken } = sliceDate(defaultPeriod);
 
   const handleSubmit = (e) => {

@@ -1,41 +1,18 @@
 {
   "name": "dontmissit",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.10",
-    "moment": "^2.29.1",
-    "puppeteer-core": "^13.5.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3",
-    "ws": "^8.5.0"
-  },
-  "devDependencies": {
-    "eslint": "^8.10.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.29.3",
-    "prettier": "^2.5.1"
-  },
+  "workspaces":[
+    "client",
+    "server"
+  ],
+  "main": "index.js",
   "scripts": {
-    "client:start": "react-scripts start",
-    "client:build": "react-scripts build",
-    "server:start": "node ./src/server.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "start": "npm run start --workspaces",
+    "start:client": "npm run start --workspace=client",
+    "start:server": "npm run start --workspace=server",
+    "build": "npm run build --workspace=client",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces"
   }
 }

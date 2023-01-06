@@ -20,14 +20,6 @@ export const defaultSelectors = {
   }
 };
 
-export const defaultPeriod = '15m';
+export const defaultPeriod = '1m';
 
 export const defaultDateFormat = 'MMMM Do YYYY, h:mm:ss';
-
-export const defaultOptions = {
-  product: 'chrome',
-  channel: 'chrome',
-  args: ['--lang=en-US,en'],
-  headless: true,
-  setViewport: { width: 1240, height: 680 }
-};
